@@ -23,24 +23,25 @@ CY_ISR(Custom_UART_RX_ISR)
     
     if (UART_ReadRxStatus() == UART_RX_STS_FIFO_NOTEMPTY)
     {
-        switch(byte_number)
-        {
-            case 0:
-                byte_number=1;
-                break;
-            case 1:
-                byte_number=2;
-                break;
-            case 2:
-                byte_number=3;
-                break;
-            case 3:
-                byte_number=4;
-                break;
-            case 4:
-                byte_number=5;
-                break;
-        }
+        byte_number++;
+//        switch(byte_number)
+//        {
+//            case 0:
+//                byte_number=1;
+//                break;
+//            case 1:
+//                byte_number=2;
+//                break;
+//            case 2:
+//                byte_number=3;
+//                break;
+//            case 3:
+//                byte_number=4;
+//                break;
+//            case 4:
+//                byte_number=5;
+//                break;
+//        }
         
         
         
