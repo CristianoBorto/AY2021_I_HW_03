@@ -1,12 +1,10 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
- *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
+ * Assignment 03
+ * Editor: Cristiano Bortolotti
+ * File: main.c
+ * Date: 15/10/2020 - 20/10/2020
+ * 
  * ========================================
 */
 #include "project.h"
@@ -17,7 +15,7 @@ int main(void)
 
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
 
-    for(;;)
+    while(1)
     {
         /* Place your application code here. */
     }
