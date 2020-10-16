@@ -11,12 +11,15 @@
 #include "MyISR.h"
 #include "MyFunction.h"
 
+#define timeout 10 //definition of the available interval to submit values
+
 uint8 control_timer=0;
 uint8 byte_number=0;
+uint8 Change_LEDs=0;
 int received;
-int received2;
 uint8 Red_Value;
 uint8 Green_Value;
+uint8 Blue_Value;
 
 int main(void)
 {
@@ -42,64 +45,81 @@ int main(void)
                     UART_ClearRxBuffer();
                     break;
                 case 0xA0:
+                    Change_LEDs=0;
+                    control_timer=0;
                     UART_PutString("Insert Red value:\r\n");
                     Timer_Start();
-                    control_timer=0;
-                    while(control_timer<5)
+                    UART_ClearRxBuffer();
+                    while(control_timer<timeout && Change_LEDs==0)
                     {
                         if(byte_number==2)
                         {
-                            received2 = UART_ReadRxData();
-                            if(received2>0 && received2<255) //se è giusto
-                            {
-                                Red_Value=received2; //salvo rosso
-                                Timer_Init(); //ri-inizializzo il timer
-                                control_timer=0; //azzero contatore
-                                while(control_timer<5) //comincio a contare 5s
+                            received = UART_ReadRxData();
+                            UART_ClearRxBuffer();
+                            UART_PutString("Insert Green value:\r\n");
+                            Red_Value=received; //salvo rosso
+                            Timer_Init(); //ri-inizializzo il timer
+                            control_timer=0; //azzero contatore
+                            while(control_timer<timeout && Change_LEDs==0) //comincio a contare 5s
                                 {
                                     if(byte_number==3) //è arrivato il terzo codice
                                     {
-                                        UART_PutString("Insert Green value:\r\n");
-                                        received = UART_ReadRxData(); //salvo terzo codice
-                                        if(received>0 && received<255) //è giusto?
+                                        received = UART_ReadRxData();
+                                        UART_ClearRxBuffer();
+                                        UART_PutString("Insert Blue value:\r\n");
+                                        Green_Value=received;
+                                        Timer_Init(); //ri-inizializzo il timer
+                                        control_timer=0; //azzero contatore
+                                        while(control_timer<timeout && Change_LEDs==0)
                                         {
-                                            Green_Value=received; //salvo verde
-                                            Debug_LED_Write(1);
-                                            Timer_Stop();
-                                            byte_number=0;
-                                            control_timer=0;
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            error(0);
-                                            byte_number=0;
-                                            Timer_Stop();
-                                            control_timer=5;
+                                            if(byte_number==4)
+                                            {
+                                                received = UART_ReadRxData();
+                                                UART_ClearRxBuffer();
+                                                UART_PutString("Insert '0xC0' or 192 to confirm\r\n");
+                                                Blue_Value=received;
+                                                Timer_Init(); //ri-inizializzo il timer
+                                                control_timer=0;
+                                                while(control_timer<timeout && Change_LEDs==0)
+                                                {
+                                                    if(byte_number==5)
+                                                    {
+                                                        received = UART_ReadRxData();
+                                                        UART_ClearRxBuffer();
+                                                        if(received==0xC0)
+                                                        {
+                                                            UART_PutString("Thanks for submitting your request!\r\n");
+                                                            byte_number=0;
+                                                            Timer_Stop();
+                                                            control_timer=0;
+                                                            Change_LEDs=1;
+                                                            break;
+                                                        }
+                                                        else
+                                                        {
+                                                            error(0);
+                                                            Timer_Stop();
+                                                            byte_number=0;
+                                                            UART_ClearRxBuffer();
+                                                            Change_LEDs=1;
+                                                            control_timer=5;
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
-                                }
-     
-                            }
-                            else //if(received<0 || received>255) //se è sbagliato
-                            {
-                                Debug_LED_Write(1);
-                                UART_PutString("dio cane");
-                                byte_number=0;
-                                //Timer_Stop();
-                                control_timer=6;
-                                error(0);
-                                break;
-                                 //6 per non stampare il doppio errore
-                            }
-                            
+                                }  
                         }
                     }
-                    
-                    byte_number=0;
-                    error(1);
-                    Timer_Stop();
-                    control_timer=0;
+                    if(Change_LEDs==0)
+                    {
+                        byte_number=0;
+                        error(1);
+                        Timer_Stop();
+                        control_timer=0;
+                        break;
+                    }
                     break;
                     
                 default:
@@ -110,7 +130,14 @@ int main(void)
             
             }
         }
-        
+      
+        if(Change_LEDs==1)
+        {
+            PWM_RG_WriteCompare1(Red_Value);
+            PWM_RG_WriteCompare2(Green_Value);
+            PWM_B_WriteCompare(Blue_Value);
+            Change_LEDs=0;
+        }
         
     }
 }

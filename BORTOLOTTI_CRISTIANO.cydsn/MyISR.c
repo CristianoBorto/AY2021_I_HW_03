@@ -34,6 +34,12 @@ CY_ISR(Custom_UART_RX_ISR)
             case 2:
                 byte_number=3;
                 break;
+            case 3:
+                byte_number=4;
+                break;
+            case 4:
+                byte_number=5;
+                break;
         }
         
         
