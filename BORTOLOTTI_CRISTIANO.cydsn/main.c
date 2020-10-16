@@ -8,13 +8,15 @@
  * ========================================
 */
 #include "project.h"
+#include "MyISR.h"
 
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
-
-    /* Place your initialization/startup code here (e.g. MyInst_Start()) */
-
+    
+    ISR_UART_StartEx(Custom_UART_RX_ISR);
+    ISR_Timer_StartEx(Custom_Timer_ISR);
+    
     while(1)
     {
         /* Place your application code here. */
