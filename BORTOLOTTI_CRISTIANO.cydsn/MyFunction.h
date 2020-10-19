@@ -1,37 +1,35 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
- *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * Assignment 03
+ * Editor: Cristiano Bortolotti
+ * File: MyFunction.h
+ * Date: 15/10/2020 - 20/10/2020
  *
  * ========================================
 */
 
 #include "project.h"
 
-typedef struct {
+typedef struct { //statemente of color struct
     uint8_t red_value;
     uint8_t green_value;
     uint8_t blue_value;
 } Color;
 
-void start_peripherls(void);
+void start_peripherls(void); // statement of the function used to start peripherals
 
-void start_ISR(void);
+void start_ISR(void); // statement of the function used to enable and to start ISR
 
-void error(uint8 type);
+void v_response(void); // statement of the funtion used to group 'v' case
 
-void LED_WriteColor (Color c);
+void error(uint8 type); // statement of error function
 
-void v_response(void);
+void LED_WriteColor (Color c); // statement
 
-void correct_tail(void);
+void correct_tail(void); // statement
 
-void stop_Timer(void);
+void stop_Timer(void); // statement
 
-void reset_Timer(void);
+void reset_Timer(void); // statement
 
 /* [] END OF FILE */

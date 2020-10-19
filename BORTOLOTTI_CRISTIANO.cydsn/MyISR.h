@@ -13,6 +13,7 @@
     
     #include "cytypes.h"
     
+    //statement of the two ISR
     CY_ISR_PROTO(Custom_UART_RX_ISR);
     CY_ISR_PROTO(Custom_Timer_ISR);
     

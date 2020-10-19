@@ -1,11 +1,9 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
- *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * Assignment 03
+ * Editor: Cristiano Bortolotti
+ * File: MyFunction.c
+ * Date: 15/10/2020 - 20/10/2020
  *
  * ========================================
 */
@@ -14,6 +12,7 @@
 #include "project.h"
 #include "MyISR.h"
 
+//used variable
 uint8 byte_number;
 uint8 control_timer;
 extern uint8 exit_flag;
@@ -24,8 +23,11 @@ Color red = {255,0,0};
 
 void start_peripherls()
 {
+    //PWMs start
     PWM_B_Start();
     PWM_RG_Start();
+    LED_WriteColor (c);
+    //UART start
     UART_Start();
     UART_PutString("Insert '0xA0' or '160' to start or 'v' for info\r\n");
 }
@@ -35,6 +37,14 @@ void start_ISR()
     CyGlobalIntEnable; 
     ISR_UART_StartEx(Custom_UART_RX_ISR);
     ISR_Timer_StartEx(Custom_Timer_ISR); 
+}
+
+void v_response(void)
+{
+    UART_PutString("RGB LED Program $$$\r\n");
+    byte_number=0; //return to the waiting condition for the first byte
+    UART_ClearRxBuffer(); //it clears the receiver buffer in order to avoid problem if lots of byte are coming (spamming of 
+                          //letters, too long packet ecc...)
 }
 
 void error(uint8 type)
@@ -52,8 +62,9 @@ void error(uint8 type)
             break;
     }
     
-    CyDelay(50); //questo tempo permette un lempeggiio percepibile senza creare problemi se si spamma una lettera
-    // reimposta config in memoria
+    CyDelay(50); 
+    LED_WriteColor (black);
+    CyDelay(50);
     LED_WriteColor (c);
     Confirm_LED_Write(0);
     UART_ClearRxBuffer();
@@ -68,18 +79,14 @@ void LED_WriteColor (Color c)
     Change_LEDs=0;
 }
 
-void v_response(void)
-{
-    UART_PutString("RGB LED Program $$$\r\n");
-    byte_number=0;
-    UART_ClearRxBuffer(); 
-}
+
 
 void correct_tail(void)
 {
+    stop_Timer();
     UART_PutString("Thanks for submitting your request!\r\n");
     byte_number=0;
-    stop_Timer();
+    UART_ClearRxBuffer(); //clear all useless byte insert after the tail
     exit_flag=1;
     Change_LEDs=1;   
 }
